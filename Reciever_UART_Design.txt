@@ -1,0 +1,75 @@
+module Reciever (rx_tick , parity_type, parity_en, stop2, rst, rx_start,
+                length, rx_data, rx_done, err,rx
+                ); 
+  input rx_tick , parity_type, parity_en, stop2, rst, rx_start;
+  input [1:0] length; 
+  input  rx_data; 
+  output reg [7:0] rx;
+  output reg rx_done, err;
+  integer counter = 0; 
+  parameter IDLE = 2'b00, RECIEVE = 2'b01, CHECK_PARITY = 2'b10, END = 2'b11;
+  reg isCorrect, start_bit; 
+  reg [7:0] Treg; 
+  reg [1:0] currentState, nextState; 
+  
+  
+  always @ (length) begin 
+    case (length)  
+      2'b00: counter <= 5; 
+      2'b01: counter <= 6; 
+      2'b10: counter <=7; 
+      2'b11: counter <=8; 
+      default: counter <=8; 
+    endcase       
+  end
+  
+   
+ 
+  
+  
+//   always @ (currentState, rx_start, counter)begin
+//     case (currentState)
+//       IDLE : nextState = rx_start ? RECIEVE : IDLE; 
+//       RECIEVE:begin
+//         if(!counter) nextState <= CHECK_PARITY; 
+//       	else nextState <= END; 
+//       end 
+//       CHECK_PARITY : nextState <= END;   
+//       END: nextState <= IDLE; 
+//     endcase     
+//   end 
+  
+   always @ (negedge rx_tick, negedge rst) begin
+    if (!rst) currentState <= IDLE;
+    else currentState <= nextState; 
+  end 
+  
+  always @ (negedge rx_tick)begin
+    case (currentState) 
+      IDLE: begin
+        rx <= 1; 
+        nextState = rx_start ? RECIEVE : IDLE;        
+      end
+      RECIEVE: begin
+//         if (counter == length) start_bit <= rx_data;   
+//         else Treg <= {rx_data, Treg[7:1]};                 
+        counter = counter - 1;   
+        
+        if(counter == 0) nextState <= CHECK_PARITY; 
+      	else nextState <= RECIEVE; 
+      	 
+        $display ("DATA RECIEVED: %b, counter= %d", Treg, counter);
+      end  
+        
+      CHECK_PARITY: begin
+        nextState <= END;  
+//           $display ("DATA RECIEVED: %b", Treg); 
+        end 
+
+       
+    endcase 
+  end 
+endmodule 
+  
+  
+  

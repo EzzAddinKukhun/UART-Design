@@ -1,0 +1,60 @@
+module clkGen (baud, clk, rst, tick); 
+  input [17:0] baud;
+  input clk, rst; 
+  output reg tick;
+  integer counter = 0; 
+  integer finalValue; 
+  
+  assign finalValue = (50 * 10**6)/baud; 
+  
+  always @ (posedge clk)begin
+    
+    if (counter >= 0 && counter < finalValue/2) tick <= 1; 
+    else if (counter >= finalValue/2 && counter < finalValue) tick <=0; 
+    counter = counter + 1; 
+    if (counter == finalValue) counter = 0; 
+    $display ("counter: %d" ,counter); 
+    
+    
+  end 
+  
+  
+  
+endmodule 
+
+
+`timescale 1ns/1ps
+
+module clkGenTB; 
+  reg [17:0] baud; 
+  reg clk, rst; 
+  wire tick; 
+  
+  clkGen clk_gen (
+    .baud(baud),
+    .clk(clk),
+    .rst(rst),
+    .tick(tick)
+  );
+  
+  
+  always begin 
+    #10; 
+    clk = 0; 
+    #10; 
+    clk = 1; 
+  end 
+  
+    
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+  end 
+  
+  initial begin
+        baud = 9600; 
+  end 
+  
+  
+    
+endmodule 

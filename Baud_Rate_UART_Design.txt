@@ -1,0 +1,24 @@
+// module clkGen (baud, clk, rst, tick); 
+//   input [17:0] baud;
+//   input clk, rst; 
+//   output reg tick;
+//   integer counter; 
+//   integer finalValue; 
+  
+//   assign finalValue = (1 * 10**5)/baud;   
+  
+//   always @ (finalValue) begin
+//     counter = 0; 
+//   end
+  
+//   always @ (posedge clk or negedge rst)begin 
+//     if (!rst) counter = 0; 
+//     else 
+//       begin
+//         if (counter >= 0 && counter < finalValue/2) tick <= 1; 
+//         else if (counter >= finalValue/2 && counter < finalValue) tick <=0; 
+//         counter = counter + 1; 
+//         if (counter == finalValue) counter = 0; 
+//      end 
+//   end  
+// endmodule 

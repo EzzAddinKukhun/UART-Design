@@ -1,0 +1,55 @@
+`timescale 1ns/1ps
+
+module transmitterTB; 
+  reg tx_tick , parity_type, parity_en, stop2, rst, tx_start;
+  reg [1:0] length; 
+  reg [7:0] tx_data; 
+  wire tx, tx_done;
+  
+  Transmitter trans (
+    .tx_tick(tx_tick),
+    .tx_start(tx_start),
+    .length(length),
+    .tx_data(tx_data), 
+    .parity_type(parity_type),
+    .parity_en(parity_en),
+    .stop2(stop2),
+    .rst(rst),
+    .tx(tx),
+    .tx_done(tx_done)
+  );
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+    tx_tick <= 0; 
+   	rst = 0; 
+    #1; 
+    rst = 1; 
+   
+end 
+  
+always begin
+    #3; 
+    tx_tick <= ~tx_tick; 
+end
+  
+
+  
+initial begin
+  length <= 0; 
+  tx_start <= 1'b1; 
+  tx_data <= 5'b10111;   
+  parity_type <= 1'b1;   
+  parity_en <= 1'b1;   
+  stop2 <= 1'b0;   
+  #500; $finish; 
+ 
+  
+end 
+  
+  
+  
+    
+endmodule 
+
